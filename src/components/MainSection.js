@@ -20,7 +20,7 @@ const MainSection = () => {
     return (
         <>
             <Container
-                maxWidth="xl"
+                maxWidth="100%"
                 sx={{
                     backgroundColor: "#0bb6e1",
                     // boxShadow: "0px 8px 12px rgba(0, 0, 0, 1)",
