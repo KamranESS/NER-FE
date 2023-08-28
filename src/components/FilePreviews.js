@@ -1,20 +1,16 @@
 import React from "react";
 import {
   Paper,
-  Typography,
   ImageList,
   ImageListItem,
-  Button,
   IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import "../styles/custom-scrollbar.css";
 
 const FilePreviews = ({ uploadedFiles, onDeleteImage }) => {
   return (
-    <Paper>
-      {/* <Typography variant="h6" gutterBottom>
-        Uploaded Files Preview:
-      </Typography> */}
+    <Paper sx={{ backgroundColor: "#333333" }}>
       <ImageList cols={2} gap={10}>
         {uploadedFiles.map((file, index) => (
           <ImageListItem key={index}>

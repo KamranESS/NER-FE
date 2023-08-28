@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Container, Typography, Box, } from '@mui/material'
+import { Container, Typography, Box, Button } from '@mui/material'
 import FileUpload from "./FileUpload";
 import FilePreviews from "./FilePreviews";
 
 const MainSection = () => {
     const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [selectedImage, setSelectedImage] = useState(null);
     const [showPreviews, setShowPreviews] = useState(false);
 
     const handleFilesSelect = (files) => {
@@ -17,15 +18,21 @@ const MainSection = () => {
         const newFiles = uploadedFiles.filter((_, i) => i !== index);
         setUploadedFiles(newFiles);
     };
+
+    const handleImageSelect = (index) => {
+        setSelectedImage(uploadedFiles[index]);
+    };
+
+    const handleGetStarted = () => {
+        setSelectedImage(null);
+    };
+
     return (
         <>
             <Container
                 maxWidth="100%"
                 sx={{
                     backgroundColor: "#0bb6e1",
-                    // boxShadow: "0px 8px 12px rgba(0, 0, 0, 1)",
-                    // marginBottom: "20px",
-                    // border: "1px solid #ddd",
                     transform: "translateY(-5px)", // Adding 3D effect
                     transition: "transform 0.2s ease",
                 }}
@@ -67,18 +74,17 @@ const MainSection = () => {
                     }}
                 >
                     <Container
+                        className="scrollbar-container"
                         sx={{
                             backgroundColor: "#333333",
                             minHeight: "65vh",
                             maxHeight: "65vh",
-                            // New push
-                            // padding: "10px 20px",
-                            // display: "flex",
                             borderRadius: "6px",
                             overflowY: "auto",
                         }}><FilePreviews
                             uploadedFiles={uploadedFiles}
                             onDeleteImage={handleDeleteImage}
+                            onSelectImage={handleImageSelect}
                         /></Container>
                     <Container
                         sx={{
@@ -98,7 +104,24 @@ const MainSection = () => {
                         minHeight: "80vh",
                         flex: "2", // Allow it to grow and take 70% of the width
                     }}
-                ></Container>
+                >
+                    <Button
+                        varient="contained"
+                        color="primary"
+                        onClick={handleGetStarted}
+                    >Get Started</Button>
+                    <Container
+                        maxWidth="xl"
+                    >
+                        {selectedImage && (
+                            <img
+                                src={URL.createObjectURL(selectedImage)}
+                                alt="Selected"
+                                style={{ maxWidth: "100%", maxHeight: "100%" }}
+                            />
+                        )}
+                    </Container>
+                </Container>
             </div>
         </>
     )
