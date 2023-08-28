@@ -94,7 +94,7 @@ function App() {
           }}
         >
           <Typography variant="subtitle1" component="p" sx={{ color: "red" }}>
-            Note: Only image files (jpeg, png, gif) are allowed.
+            Note: Only image files (jpeg, png, gif) are allowed. Test 
           </Typography>
         </Container>
       </Container>
