@@ -18,3 +18,8 @@
 .scrollbar-container {
    scroll-behavior: smooth;
 }
+
+.image-container img{
+   width: 150px;
+   height: auto;
+}

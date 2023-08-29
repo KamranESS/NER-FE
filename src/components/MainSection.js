@@ -117,7 +117,7 @@ const MainSection = () => {
                             <img
                                 src={URL.createObjectURL(selectedImage)}
                                 alt="Selected"
-                                style={{ maxWidth: "100%", maxHeight: "100%" }}
+                                style={{ maxWidth: "350px", maxHeight: "100%" }}
                             />
                         )}
                     </Container>
