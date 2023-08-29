@@ -11,6 +11,7 @@ const MainSection = () => {
     const handleFilesSelect = (files) => {
         const imageFiles = files.filter((file) => file.type.startsWith("image/"));
         setUploadedFiles(imageFiles);
+        setSelectedImage(imageFiles[0]);
         setShowPreviews(true);
     };
 
@@ -85,6 +86,7 @@ const MainSection = () => {
                             uploadedFiles={uploadedFiles}
                             onDeleteImage={handleDeleteImage}
                             onSelectImage={handleImageSelect}
+                            selectedImage={selectedImage}
                         /></Container>
                     <Container
                         sx={{
