@@ -1,15 +1,22 @@
 import React, { useState } from "react";
-import { Container, Typography, Box, Button } from '@mui/material'
+import { Container, Typography, Box, IconButton } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import FileUpload from "./FileUpload";
 import FilePreviews from "./FilePreviews";
+import Sidebar from "./Sidebar";
 
 const MainSection = () => {
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
     const [showPreviews, setShowPreviews] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const handleFilesSelect = (files) => {
-        const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+        const imageFiles = files.filter((file) => {
+            const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+            return validImageTypes.includes(file.type);
+        });
+
         setUploadedFiles(imageFiles);
         setSelectedImage(imageFiles[0]);
         setShowPreviews(true);
@@ -28,24 +35,29 @@ const MainSection = () => {
         setSelectedImage(null);
     };
 
+    const handleSidebarToggle = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
+
     return (
         <>
             <Container
                 maxWidth="100%"
                 sx={{
                     backgroundColor: "#0bb6e1",
-                    transform: "translateY(-5px)", // Adding 3D effect
+                    transform: "translateY(-5px)",
                     transition: "transform 0.2s ease",
                 }}
-            ><Box
-                maxWidth="xl"
-                sx={{
-                    backgroundColor: "#0bb6e1",
-                    padding: "10px 20px",
-                    display: "flex",
-                    alignItems: "center",
-                }}
             >
+                <Box
+                    maxWidth="xl"
+                    sx={{
+                        backgroundColor: "#0bb6e1",
+                        padding: "10px 20px",
+                        display: "flex",
+                        alignItems: "center",
+                    }}
+                >
                     <Typography
                         variant="h4"
                         component="h1"
@@ -53,13 +65,13 @@ const MainSection = () => {
                     >
                         NER.
                     </Typography>
-                </Box></Container>
+                </Box>
+            </Container>
             <div
                 style={{
                     backgroundColor: "#242124",
                     minHeight: "90vh",
                     display: "flex",
-                    // gap: "2rem",
                 }}
             >
                 <Container
@@ -71,7 +83,7 @@ const MainSection = () => {
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "center",
-                        gap: 1, // Allow it to grow and take 30% of the width
+                        gap: 1,
                     }}
                 >
                     <Container
@@ -82,12 +94,15 @@ const MainSection = () => {
                             maxHeight: "65vh",
                             borderRadius: "6px",
                             overflowY: "auto",
-                        }}><FilePreviews
+                        }}
+                    >
+                        <FilePreviews
                             uploadedFiles={uploadedFiles}
                             onDeleteImage={handleDeleteImage}
                             onSelectImage={handleImageSelect}
                             selectedImage={selectedImage}
-                        /></Container>
+                        />
+                    </Container>
                     <Container
                         sx={{
                             backgroundColor: "#0bb6e1",
@@ -97,24 +112,34 @@ const MainSection = () => {
                             justifyContent: "center",
                             alignItems: "center",
                             borderRadius: "6px",
-                        }}><FileUpload onFilesSelect={handleFilesSelect} /></Container>
+                        }}
+                    >
+                        <FileUpload onFilesSelect={handleFilesSelect} />
+                    </Container>
                 </Container>
+
                 <Container
                     maxWidth="xl"
                     sx={{
                         backgroundColor: "#0bb6e1",
                         minHeight: "80vh",
-                        flex: "2", // Allow it to grow and take 70% of the width
+                        flex: "2",
                     }}
                 >
-                    <Button
-                        varient="contained"
-                        color="primary"
-                        onClick={handleGetStarted}
-                    >Get Started</Button>
-                    <Container
-                        maxWidth="xl"
+                    <IconButton
+                        onClick={handleSidebarToggle}
+                        sx={{
+                            position: "absolute",
+                            top: 10,
+                            right: 10,
+                            zIndex: 1,
+                            backgroundColor: "#fff",
+                        }}
                     >
+                        <MenuIcon />
+                    </IconButton>
+                    <Sidebar open={isSidebarOpen} onClose={handleSidebarToggle} />
+                    <Container maxWidth="xl">
                         {selectedImage && (
                             <img
                                 src={URL.createObjectURL(selectedImage)}
@@ -126,7 +151,7 @@ const MainSection = () => {
                 </Container>
             </div>
         </>
-    )
-}
+    );
+};
 
-export default MainSection
+export default MainSection;
