@@ -34,7 +34,7 @@ const FileUpload = ({ onFilesSelect }) => {
   };
 
   return (
-    <Box sx={{ marginTop: "5rem" }}>
+    <>
       <Paper
         // variant="outlined"
         elevation={9}
@@ -46,9 +46,6 @@ const FileUpload = ({ onFilesSelect }) => {
           backgroundColor: "#fff",
           color: "black",
           transition: "background-color 0.3s ease",
-          "&:hover": {
-            backgroundColor: "#0797b8",
-          },
         }}
         {...getRootProps()}
       >
@@ -64,7 +61,7 @@ const FileUpload = ({ onFilesSelect }) => {
         onClose={handleCloseWarning}
         message="Only image files (jpeg, png, gif) are allowed."
       />
-    </Box>
+    </>
   );
 };
 
