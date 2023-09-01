@@ -10,6 +10,7 @@ const MainSection = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [showPreviews, setShowPreviews] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const totalFiles = uploadedFiles.length;
 
     const handleFilesSelect = (files) => {
         const imageFiles = files.filter((file) => {
@@ -29,10 +30,6 @@ const MainSection = () => {
 
     const handleImageSelect = (index) => {
         setSelectedImage(uploadedFiles[index]);
-    };
-
-    const handleGetStarted = () => {
-        setSelectedImage(null);
     };
 
     const handleSidebarToggle = () => {
@@ -96,6 +93,23 @@ const MainSection = () => {
                             overflowY: "auto",
                         }}
                     >
+                        <div
+                            style={{
+                                // position: "absolute",
+                                // top: 5,
+                                // right: 5,
+                                backgroundColor: "#0bb6e1",
+                                color: "#fff",
+                                padding: "4px 8px",
+                                borderRadius: "10px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                marginTop: "1rem",
+                            }}
+                        >
+                            <span style={{ marginRight: "4px", fontSize: "16px", fontWeight: "600" }}>- Total Files: {totalFiles} -</span>
+                        </div>
                         <FilePreviews
                             uploadedFiles={uploadedFiles}
                             onDeleteImage={handleDeleteImage}

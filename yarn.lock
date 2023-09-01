@@ -2541,6 +2541,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-reconciler@^0.28.0", "@types/react-reconciler@^0.28.2":
+  version "0.28.3"
+  resolved "https://registry.yarnpkg.com/@types/react-reconciler/-/react-reconciler-0.28.3.tgz#40767cd175fb6c3c4e4009c8be5548cf7ec99280"
+  integrity sha512-srdTEjQKa0e2mVdjIJkISnFAevdXk3py6J7oKQWjLhy1JNaGq9zEgBh2adejjKi36gHn8NGa/Rr1Uh29rF97dQ==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-transition-group@^4.4.6":
   version "4.4.6"
   resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-4.4.6.tgz#18187bcda5281f8e10dfc48f0943e2fdf4f75e2e"
@@ -3706,7 +3713,7 @@ clone@^2.1.2:
   resolved "https://registry.yarnpkg.com/clone/-/clone-2.1.2.tgz#1b7f4b9f591f1e8f83670401600345a02887435f"
   integrity sha512-3Pe/CF1Nn94hyhIYpjtiLhdCoEoz0DqQ+988E9gmeEdQZlojxnOb74wctFyuwWQHzqyf9X7C7MG8juUpqBJT8w==
 
-clsx@^1.0.4:
+clsx@^1.0.4, clsx@^1.1.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.2.1.tgz#0ddc4a20a549b59c93a4116bb26f5294ca17dc12"
   integrity sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==
@@ -6237,6 +6244,13 @@ iterator.prototype@^1.1.0:
     has-tostringtag "^1.0.0"
     reflect.getprototypeof "^1.0.3"
 
+its-fine@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/its-fine/-/its-fine-1.1.1.tgz#e74b93fddd487441f978a50f64f0f5af4d2fc38e"
+  integrity sha512-v1Ia1xl20KbuSGlwoaGsW0oxsw8Be+TrXweidxD9oT/1lAh6O3K3/GIM95Tt6WCiv6W+h2M7RB1TwdoAjQyyKw==
+  dependencies:
+    "@types/react-reconciler" "^0.28.0"
+
 jake@^10.8.5:
   version "10.8.7"
   resolved "https://registry.yarnpkg.com/jake/-/jake-10.8.7.tgz#63a32821177940c33f356e0ba44ff9d34e1c7d8f"
@@ -6994,6 +7008,11 @@ klona@^2.0.4, klona@^2.0.5:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/klona/-/klona-2.0.6.tgz#85bffbf819c03b2f53270412420a4555ef882e22"
   integrity sha512-dhG34DXATL5hSxJbIexCft8FChFXtmskoZYnoPWjXQuebWYCNkVeV3KkGegCK9CP1oswI/vQibS2GY7Em/sJJA==
+
+konva@^9.2.0:
+  version "9.2.0"
+  resolved "https://registry.yarnpkg.com/konva/-/konva-9.2.0.tgz#3739e539724b0e6b76d697a322efdaa01baa1508"
+  integrity sha512-+woI76Sk+VFVl9z7zPkuTnN2zFpEYg27YWz8BCdQXpt5IS3pdnSPAPQVPPMidcbDi9/G5b/IOIp35/KqMGiYPA==
 
 language-subtag-registry@~0.3.2:
   version "0.3.22"
@@ -8648,6 +8667,14 @@ react-dom@^18.2.0:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
 
+react-draggable@^4.4.5:
+  version "4.4.5"
+  resolved "https://registry.yarnpkg.com/react-draggable/-/react-draggable-4.4.5.tgz#9e37fe7ce1a4cf843030f521a0a4cc41886d7e7c"
+  integrity sha512-OMHzJdyJbYTZo4uQE393fHcqqPYsEtkjfMgvCHr6rejT+Ezn4OZbNyGH50vv+SunC1RMvwOTSWkEODQLzw1M9g==
+  dependencies:
+    clsx "^1.1.1"
+    prop-types "^15.8.1"
+
 react-dropzone@^14.2.3:
   version "14.2.3"
   resolved "https://registry.yarnpkg.com/react-dropzone/-/react-dropzone-14.2.3.tgz#0acab68308fda2d54d1273a1e626264e13d4e84b"
@@ -8677,6 +8704,16 @@ react-is@^18.0.0, react-is@^18.2.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.2.0.tgz#199431eeaaa2e09f86427efbb4f1473edb47609b"
   integrity sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==
 
+react-konva@^18.2.10:
+  version "18.2.10"
+  resolved "https://registry.yarnpkg.com/react-konva/-/react-konva-18.2.10.tgz#5b5edc5e9ed452755d21babc353747828868decc"
+  integrity sha512-ohcX1BJINL43m4ynjZ24MxFI1syjBdrXhqVxYVDw2rKgr3yuS0x/6m1Y2Z4sl4T/gKhfreBx8KHisd0XC6OT1g==
+  dependencies:
+    "@types/react-reconciler" "^0.28.2"
+    its-fine "^1.1.1"
+    react-reconciler "~0.29.0"
+    scheduler "^0.23.0"
+
 react-lifecycles-compat@^3.0.2:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
@@ -8695,6 +8732,14 @@ react-pdf@^7.3.3:
     prop-types "^15.6.2"
     tiny-invariant "^1.0.0"
     tiny-warning "^1.0.0"
+
+react-reconciler@~0.29.0:
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/react-reconciler/-/react-reconciler-0.29.0.tgz#ee769bd362915076753f3845822f2d1046603de7"
+  integrity sha512-wa0fGj7Zht1EYMRhKWwoo1H9GApxYLBuhoAuXN0TlltESAjDssB+Apf0T/DngVqaMyPypDmabL37vw/2aRM98Q==
+  dependencies:
+    loose-envify "^1.1.0"
+    scheduler "^0.23.0"
 
 react-refresh@^0.11.0:
   version "0.11.0"
