@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import {
+  Box,
+  Container,
   Drawer,
   List,
   ListItem,
@@ -14,7 +16,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import Alert from "@mui/material/Alert";
 
-const Sidebar = ({ open, onClose }) => {
+const Sidebar = () => {
   const [labels, setLabels] = useState([]);
   const [newLabel, setNewLabel] = useState("");
   const [duplicateAlert, setDuplicateAlert] = useState(false);
@@ -53,15 +55,14 @@ const Sidebar = ({ open, onClose }) => {
   const handleCloseDuplicateAlert = () => {
     setDuplicateAlert(false);
   };
-
   return (
-    <Drawer anchor="right" open={open} onClose={onClose}>
-      <List sx={{ width: 300 }}>
-        <Typography variant="h6" sx={{ marginLeft: 2, marginTop: 2, marginBottom: 2 }}>
+    <>
+      <List>
+        <Typography variant="h6" sx={{ marginLeft: 2, marginBottom: 2 }}>
           Labels
         </Typography>
         {labels.map((label, index) => (
-          <ListItem key={index} disablePadding sx={{ paddingLeft: 2, paddingRight: 2, borderBottom: "1px solid #ddd" }}>
+          <ListItem key={index} disablePadding sx={{borderBottom: "1px solid #ddd" }}>
             <ListItemIcon>
               <span
                 style={{
@@ -70,7 +71,7 @@ const Sidebar = ({ open, onClose }) => {
                   width: "16px",
                   height: "16px",
                   display: "inline-block",
-                  marginRight: "6px",
+                  marginLeft: "1.5rem",
                 }}
               />
             </ListItemIcon>
@@ -85,15 +86,15 @@ const Sidebar = ({ open, onClose }) => {
             </IconButton>
           </ListItem>
         ))}
-        <ListItem disablePadding sx={{ paddingLeft: 2, paddingRight: 2 }}>
+        <ListItem disablePadding>
           <TextField
             variant="outlined"
             label="New Label"
             value={newLabel}
             onChange={handleNewLabelChange}
-            sx={{ width: "70%", marginTop: 3, marginRight: 2, }}
+            sx={{ marginRight: 3, width: "50%",marginTop: 2, marginLeft: "1.5rem",}}
           />
-          <Button variant="contained" onClick={handleAddNewLabel} sx={{ marginTop: 3,}}>
+          <Button variant="contained" onClick={handleAddNewLabel} sx={{ marginTop: 2,}}>
             Add
           </Button>
         </ListItem>
@@ -107,8 +108,8 @@ const Sidebar = ({ open, onClose }) => {
           Label already exists!
         </Alert>
       </Snackbar>
-    </Drawer>
-  );
-};
+    </>
+  )
+}
 
-export default Sidebar;
+export default Sidebar
