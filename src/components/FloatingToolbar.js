@@ -1,25 +1,45 @@
-import React from "react";
-import {IconButton } from "@mui/material";
+import React, { useState } from "react";
+import { IconButton, Menu, MenuItem } from "@mui/material";
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import Crop75Icon from '@mui/icons-material/Crop75';
-import HandIcon from '@mui/icons-material/PanTool';
 
-const FloatingToolbar = ({ onEditClick, onZoomInClick, onZoomOutClick, isEditMode }) => {
+const FloatingToolbar = ({ onAddRectangle, onZoomInClick, onZoomOutClick, isLocked, generatedLabels }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleLabelSelect = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
-      <IconButton onClick={onEditClick} sx={{ color: "#fff" }}>
+      <IconButton onClick={onAddRectangle} disabled={isLocked} sx={{ color: "white" }}>
         <Crop75Icon />
       </IconButton>
-      <IconButton onClick={onZoomInClick} sx={{ color: "#fff" }}>
+      <IconButton onClick={onZoomInClick} sx={{ color: "white" }}>
         <ZoomInIcon />
       </IconButton>
-      <IconButton onClick={onZoomOutClick} sx={{ color: "#fff" }}>
+      <IconButton onClick={onZoomOutClick} sx={{ color: "white" }}>
         <ZoomOutIcon />
       </IconButton>
-      <IconButton onClick={isEditMode} sx={{ color: "#fff" }}>
-        <HandIcon />
+      <IconButton onClick={handleLabelSelect} sx={{ color: "white" }}>
+        Label
       </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        {generatedLabels.map((label, index) => (
+          <MenuItem key={index} onClick={handleClose}>
+            {label.label}
+          </MenuItem>
+        ))}
+      </Menu>
     </>
   );
 };

@@ -40,19 +40,20 @@ const FileUpload = ({ onFilesSelect }) => {
         elevation={9}
         sx={{
           padding: "20px",
-          //   height: "20vh",
+            // height: "10vh",
           textAlign: "center",
           cursor: "pointer",
-          backgroundColor: "#fff",
+          backgroundColor: "white",
           color: "black",
           transition: "background-color 0.3s ease",
+          maxHeight: "8vh",
         }}
         {...getRootProps()}
       >
         <input {...getInputProps()} />
-        <CloudUploadIcon fontSize="large" />
-        <Typography variant="subtitle1" component="p">
-          Drop image files here or click to select
+        <CloudUploadIcon sx={{ color: "black", fontSize: 30}} />
+        <Typography variant="subtitle2" component="p" sx={{ color: "black", fontWeight: "500" }}>
+          Drop Image files here or click to select
         </Typography>
       </Paper>
       <Snackbar

@@ -6,7 +6,7 @@
 }
 
 .scrollbar-container::-webkit-scrollbar-thumb {
-   background-color: #0bb6e1;
+   background-color: #fff;
    /* color of the scrollbar thumb */
    border-radius: 4px;
    /* round corners */
@@ -25,12 +25,12 @@
 }
 
 .scrollbar-container1::-webkit-scrollbar {
-   width: 8px;
+   width: 6px;
    /* width of the scrollbar */
 }
 
 .scrollbar-container1::-webkit-scrollbar-thumb {
-   background-color: #0bb6e1;
+   background-color: #fff;
    /* color of the scrollbar thumb */
 }
 
