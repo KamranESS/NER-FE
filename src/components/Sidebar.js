@@ -25,6 +25,7 @@ const Sidebar = ({ onLabelsGenerated }) => {
   const [labels, setLabels] = useState([]);
   const [newLabel, setNewLabel] = useState("");
   const [duplicateAlert, setDuplicateAlert] = useState(false);
+  const [emptyInputAlert, setEmptyInputAlert] = useState(false);
   const [showGenerateLabels, setShowGenerateLabels] = useState(false);
   const [userGeneratedLabels, setUserGeneratedLabels] = useState([]);
   const [csvData, setCSVData] = useState([]);
@@ -37,8 +38,12 @@ const Sidebar = ({ onLabelsGenerated }) => {
     }));
 
     setLabels(labelsWithColors);
+    setUserGeneratedLabels(labelsWithColors);
     setShowGenerateLabels(true);
     setCSVData(labelsWithColors);
+
+    // Update the generatedLabels in the parent component
+    onLabelsGenerated(labelsWithColors);
   };
 
   const userGeneratedLabelsArray = userGeneratedLabels.map((label) => [label]);
@@ -57,25 +62,28 @@ const Sidebar = ({ onLabelsGenerated }) => {
   };
 
   const handleAddNewLabel = () => {
-    if (newLabel) {
-      if (labels.some((label) => label.label === newLabel)) {
-        setDuplicateAlert(true);
-      } else {
-        const randomColor = getRandomColor();
-        const updatedLabels = [
-          ...labels,
-          { label: newLabel, color: randomColor },
-        ];
-        setLabels(updatedLabels);
-        setUserGeneratedLabels([...userGeneratedLabels, newLabel]);
-        setNewLabel("");
-        setCSVData(updatedLabels);
+    if (newLabel.trim() === "") {
+      // Show Snackbar warning for empty input
+      setEmptyInputAlert(true);
+    } else if (labels.some((label) => label.label === newLabel)) {
+      // Show Snackbar warning for duplicate label
+      setDuplicateAlert(true);
+    } else {
+      const randomColor = getRandomColor();
+      const updatedLabels = [
+        ...labels,
+        { label: newLabel, color: randomColor },
+      ];
+      setLabels(updatedLabels);
+      setUserGeneratedLabels([...userGeneratedLabels, newLabel]);
+      setNewLabel("");
+      setCSVData(updatedLabels);
 
-        // Pass the updated labels to the parent component
-        onLabelsGenerated(updatedLabels);
-      }
+      // Pass the updated labels to the parent component
+      onLabelsGenerated(updatedLabels);
     }
   };
+
 
   const handleDeleteLabel = (labelToDelete) => {
     const updatedLabels = labels.filter(
@@ -86,6 +94,7 @@ const Sidebar = ({ onLabelsGenerated }) => {
       userGeneratedLabels.filter((label) => label !== labelToDelete.label)
     );
     setCSVData(updatedLabels);
+    onLabelsGenerated(updatedLabels);
   };
 
   const handleCloseDuplicateAlert = () => {
@@ -100,8 +109,13 @@ const Sidebar = ({ onLabelsGenerated }) => {
     if (confirmBack) {
       setShowGenerateLabels(false);
       setLabels([]);
+      setUserGeneratedLabels([]);
+
+      // Update the generatedLabels in the parent component with an empty array
+      onLabelsGenerated([]);
     }
   };
+
 
   return (
     <>
@@ -214,6 +228,7 @@ const Sidebar = ({ onLabelsGenerated }) => {
                   <Divider sx={{ backgroundColor: "grey" }} />
                 </div>
               ))}
+
             </>
           ) : (
             <ListItem
@@ -364,6 +379,16 @@ const Sidebar = ({ onLabelsGenerated }) => {
           Label already exists!
         </Alert>
       </Snackbar>
+      <Snackbar
+        open={emptyInputAlert}
+        autoHideDuration={6000}
+        onClose={() => setEmptyInputAlert(false)}
+      >
+        <Alert severity="error" onClose={() => setEmptyInputAlert(false)}>
+          Label cannot be empty!
+        </Alert>
+      </Snackbar>
+
     </>
   );
 };

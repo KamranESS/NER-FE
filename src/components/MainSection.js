@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Container, Typography, Box, IconButton, Button } from "@mui/material";
+import { Container, Typography, Box, IconButton, Snackbar, Alert, Button, Tooltip } from "@mui/material";
 import FileUpload from "./FileUpload";
 import FilePreviews from "./FilePreviews";
 import Sidebar from "./Sidebar";
@@ -8,7 +8,9 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import LockIcon from "@mui/icons-material/Lock";
+import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
 import LockOpenIcon from "@mui/icons-material/LockOpen";
+// import Tooltip from "@mui/material/Tooltip";
 import nerImage from "../assets/NER.png";
 import { Stage, Layer, Image, Rect, Transformer } from "react-konva";
 
@@ -21,17 +23,22 @@ const MainSection = () => {
   const [rectangles, setRectangles] = useState([]);
   const [selectedRectangleIndex, setSelectedRectangleIndex] = useState(null);
   const [isNewImageSelected, setIsNewImageSelected] = useState(false);
-  const [drawing, setDrawing] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(null); // Track selected image index
-  const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
   const [generatedLabels, setGeneratedLabels] = useState([]);
-  
+  const [selectedLabel, setSelectedLabel] = useState("");
+  const [labelRectMap, setLabelRectMap] = useState({});
+  const [drawing, setDrawing] = useState(false);
+  const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
+  const [tempRect, setTempRect] = useState(null); // To store the temporary rectangle being drawn
+  const [initialImagePosition, setInitialImagePosition] = useState({ x: 0, y: 0 });
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
 
   const imageRef = useRef(null);
   const stageRef = useRef(null);
   const layerRef = useRef(null);
-
-
+  const imageElementRef = useRef(null);
 
   useEffect(() => {
     if (selectedImageSrc) {
@@ -81,19 +88,21 @@ const MainSection = () => {
           y: initialY,
           scaleX: zoomLevel,
           scaleY: zoomLevel,
-          draggable: !isLocked,
+          // draggable: !isLocked,
         });
 
         layer.add(imageNode);
 
         // Render rectangles after the image
         rectangles.forEach((rect, index) => {
+          const labelObj = generatedLabels.find((labelObj) => labelObj.label === rect.label);
+          const strokeColor = labelObj ? labelObj.color : "red";
+
           layer.add(
             new window.Konva.Rect({
               ...rect,
-              stroke:
-                selectedRectangleIndex === index ? "red" : "red",
-              strokeWidth: 3,
+              stroke: selectedRectangleIndex === index ? "red" : strokeColor,
+              strokeWidth: 1,
               draggable: !isLocked,
             })
           );
@@ -143,101 +152,163 @@ const MainSection = () => {
 
   const handleImageSelect = (index) => {
     setSelectedImageSrc(URL.createObjectURL(uploadedFiles[index]))
-    setSelectedImageIndex(index); 
+    setSelectedImageIndex(index);
     setZoomLevel(1);
-  };
-
-  const handleZoomIn = () => {
-    setZoomLevel((prevZoomLevel) => prevZoomLevel + 0.2);
-  };
-
-  const handleZoomOut = () => {
-    setZoomLevel((prevZoomLevel) => prevZoomLevel - 0.2);
   };
 
   const toggleLock = () => {
     setIsLocked(!isLocked);
+    console.log(isLocked); // Check the value of isLocked
+  };
+
+  const doesRectangleExist = (label) => {
+    return rectangles.some((rect) => rect.label === label);
+  };
+
+  const addRectangle = () => {
+    if (selectedLabel) {
+      if (!labelRectMap[selectedLabel]) {
+        const labelObj = generatedLabels.find((labelObj) => labelObj.label === selectedLabel);
+
+        if (labelObj) {
+          const color = labelObj.color;
+
+          if (!doesRectangleExist(selectedLabel)) {
+            const newRectangle = {
+              x: 150,
+              y: 150,
+              width: 100,
+              height: 20,
+              label: labelObj.label,
+              stroke: color,
+              strokeWidth: 1,
+            };
+
+            setLabelRectMap({
+              ...labelRectMap,
+              [selectedLabel]: newRectangle,
+            });
+          } else {
+            // Show a message that a rectangle with the same label already exists
+            alert(`A rectangle with the label "${selectedLabel}" already exists.`);
+          }
+        }
+      }
+    }
+  };
+
+  const handleLabelChange = (updatedLabels) => {
+    // Update the labels in the parent component
+    setGeneratedLabels(updatedLabels);
   };
 
   const handleStageMouseDown = (e) => {
-    if (e.target === e.target.getStage()) {
-      setSelectedRectangleIndex(null);
-      setDrawing(true);
-      const stage = stageRef.current;
-      const scale = stage.scaleX();
-      const pointerPos = stage.getPointerPosition();
-      const x = (pointerPos.x - stage.x()) / scale;
-      const y = (pointerPos.y - stage.y()) / scale;
-      setStartPoint({ x, y });
-      setRectangles([...rectangles, { x, y, width: 0, height: 0 }]);
-      return;
-    }
+    if (isLocked && selectedLabel) {
+      const labelExists = doesRectangleExist(selectedLabel); // Check if rectangle with label exists
+      if (!labelExists) {
+        setDrawing(true);
+        const stage = stageRef.current;
+        const pointer = stage.getPointerPosition();
+        setStartPoint({
+          x: pointer.x,
+          y: pointer.y,
+        });
 
-    const clickedRect = e.target;
-    const index = rectangles.indexOf(clickedRect);
-    setSelectedRectangleIndex(index);
+        const labelObj = generatedLabels.find(
+          (labelObj) => labelObj.label === selectedLabel
+        );
+
+        if (labelObj) {
+          const color = labelObj.color;
+          setTempRect({
+            x: pointer.x,
+            y: pointer.y,
+            width: 0,
+            height: 0,
+            label: selectedLabel,
+            stroke: color,
+            strokeWidth: 1,
+          });
+        }
+      } else {
+        // Show a Snackbar message that a rectangle with the same label already exists
+        setSnackbarMessage(`A rectangle with the label "${selectedLabel}" already exists.`);
+        setSnackbarOpen(true);
+      }
+    }
   };
 
-  const handleMouseMove = (e) => {
-    if (!drawing) {
-      return;
-    }
-
-    const x = e.evt.layerX / zoomLevel;
-    const y = e.evt.layerY / zoomLevel;
-
-    const lastIndex = rectangles.length - 1;
-    const width = x - rectangles[lastIndex].x;
-    const height = y - rectangles[lastIndex].y;
-
-    const updatedRectangles = [...rectangles];
-    updatedRectangles[lastIndex] = {
-      x: rectangles[lastIndex].x,
-      y: rectangles[lastIndex].y,
-      width,
-      height,
-    };
-
-    setRectangles(updatedRectangles);
-  };
 
   const handleMouseUp = () => {
-    if (drawing) {
+    if (tempRect) {
+      const updatedRectangles = [...rectangles];
+      updatedRectangles.push(tempRect);
+      setRectangles(updatedRectangles);
+      setTempRect(null);
       setDrawing(false);
     }
   };
 
-  const addRectangle = () => {
+  const handleMouseMove = (e) => {
+    if (drawing) {
+      const stage = stageRef.current;
+      const pointer = stage.getPointerPosition();
+      const width = pointer.x - startPoint.x;
+      const height = pointer.y - startPoint.y;
 
-    // Create the new rectangle object
-    const newRectangle = {
-      x: 50,
-      y: 50,
-      width: 100,
-      height: 20,
-    };
-
-    // Update the rectangles state
-    setRectangles([...rectangles]);
+      setTempRect((prevTempRect) => ({
+        ...prevTempRect,
+        width: width,
+        height: height,
+      }));
+    }
   };
 
-  const handleMouseDown = (e) => {
-    if (!isLocked) {
-      const stage = stageRef.current;
-      const scale = stage.scaleX();
-      const pointerPos = stage.getPointerPosition();
-      const x = (pointerPos.x - stage.x()) / scale; // Adjust the size as needed
-      const y = (pointerPos.y - stage.y()) / scale; // Adjust the size as needed
+  const generateAndDownloadYOLOData = () => {
+    const yoloData = Object.values(labelRectMap).map((rect) => {
+      const x = (rect.x + rect.width / 2) / imageRef.current.width; // Calculate x center relative to image width
+      const y = (rect.y + rect.height / 2) / imageRef.current.height; // Calculate y center relative to image height
+      const width = rect.width / imageRef.current.width; // Calculate width relative to image width
+      const height = rect.height / imageRef.current.height; // Calculate height relative to image height
 
-      const newRectangle = {
-        x: x,
-        y: y,
-        width: 100,
-        height: 20,
-      };
+      return `${rect.label} ${x} ${y} ${width} ${height}`;
+    });
 
-      setRectangles([...rectangles, newRectangle]);
-    }
+    // Combine YOLO data into a single string
+    const yoloText = yoloData.join('\n');
+
+    // Create a Blob with the YOLO data
+    const blob = new Blob([yoloText], { type: 'text/plain' });
+
+    // Create a download link for the Blob
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'annotations.txt'; // Set the desired file name
+
+    // Add the download link to the DOM and trigger the download
+    document.body.appendChild(a);
+    a.click();
+
+    // Clean up by revoking the object URL
+    URL.revokeObjectURL(url);
+
+    // Generate an image with rectangles overlaid
+    const stage = stageRef.current;
+    const layer = layerRef.current;
+    stage.toDataURL({
+      callback: function (dataUrl) {
+        // Create a download link for the image
+        const imgA = document.createElement('a');
+        imgA.href = dataUrl;
+        imgA.download = 'annotated_image.png'; // Set the desired image file name
+        imgA.style.display = 'none';
+        document.body.appendChild(imgA);
+        imgA.click();
+        document.body.removeChild(imgA);
+      },
+    });
   };
 
 
@@ -377,7 +448,7 @@ const MainSection = () => {
               sx={{
                 backgroundColor: "#333333",
                 minHeight: "8vh",
-                width: "40%",
+                width: "35%",
                 borderRadius: "30px",
                 display: "flex",
                 justifyContent: "center",
@@ -386,16 +457,27 @@ const MainSection = () => {
                 marginBottom: "0.25rem",
               }}
             >
-              <IconButton onClick={toggleLock} sx={{ color: "white" }}>
-                {isLocked ? <LockIcon /> : <LockOpenIcon />}
-              </IconButton>
+              <Tooltip title="Lock Layout">
+                <IconButton onClick={toggleLock} sx={{ color: "white" }}>
+                  {isLocked ? <LockIcon /> : <LockOpenIcon />}
+                </IconButton>
+              </Tooltip>
               <FloatingToolbar
-                onZoomInClick={handleZoomIn}
-                onZoomOutClick={handleZoomOut}
+                // onZoomInClick={handleZoomIn}
+                // onZoomOutClick={handleZoomOut}
                 onAddRectangle={addRectangle}
                 isLocked={!isLocked}
+                onLabelsGenerated={handleLabelChange} // Pass the label change handler function
                 generatedLabels={generatedLabels} // Pass the generated labels as a prop
+                selectedLabel={selectedLabel} // Pass the selectedLabel state
+                setSelectedLabel={setSelectedLabel} // Pass the setSelectedLabel function
               />
+              {/* <Button onClick={generateAndDownloadYOLOData}>Generate Annotations</Button> */}
+              <Tooltip title="Generate Annotations">
+                <IconButton onClick={generateAndDownloadYOLOData} sx={{ color: "white" }}>
+                  <DownloadForOfflineIcon />
+                </IconButton>
+              </Tooltip>
             </Container>
             <TransformWrapper
               options={{
@@ -412,29 +494,29 @@ const MainSection = () => {
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
                 >
-                  <Layer ref={layerRef} onClick={handleMouseDown}>
-                    {/* Render your selected image */}
+                  <Layer ref={layerRef}>
                     {selectedImageSrc && (
                       <Image
-                        image={imageRef.current}
+                        image={imageElementRef.current}
                         maxWidth="350px"
                         maxHeight="100%"
-                        draggable={!isLocked}
                         scaleX={zoomLevel}
                         scaleY={zoomLevel}
+                        // draggable={!isLocked}
+                        x={initialImagePosition.x}
+                        y={initialImagePosition.y}
                       />
                     )}
 
-                    {/* Render rectangles */}
                     {rectangles.map((rect, index) => (
                       <Rect
                         key={index}
                         {...rect}
-                        stroke={selectedRectangleIndex === index ? "red" : "blue"}
-                        strokeWidth={2}
-                        draggable={!isLocked}
+                        strokeWidth={rect.strokeWidth}
+                        stroke={rect.stroke}
+                        draggable
                         onDrag={(e) => {
-                          const newRectangles = rectangles.slice();
+                          const newRectangles = [...rectangles];
                           newRectangles[index] = {
                             ...newRectangles[index],
                             x: e.target.x(),
@@ -448,7 +530,14 @@ const MainSection = () => {
                       />
                     ))}
 
-                    {/* Transformer for the selected rectangle */}
+                    {tempRect && (
+                      <Rect
+                        {...tempRect}
+                        strokeWidth={tempRect.strokeWidth}
+                        stroke={tempRect.stroke}
+                      />
+                    )}
+
                     {selectedRectangleIndex !== null && (
                       <Transformer
                         selectedShapeIndex={selectedRectangleIndex}
@@ -456,12 +545,10 @@ const MainSection = () => {
                       />
                     )}
                   </Layer>
-                  {/* <Layer onClick={handleMouseDown}></Layer> */}
                 </Stage>
-
-
               </TransformComponent>
             </TransformWrapper>
+            {/* <Button onClick={generateAndDownloadYOLOData}>Generate YOLO Data</Button> */}
           </div>
           <div
             className="scrollbar-container1"
@@ -504,6 +591,17 @@ const MainSection = () => {
           </Typography>
         </Box>
       </Container>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000} // Adjust the duration as needed
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert severity="error" variant="filled">
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+
     </DndProvider>
   );
 };
